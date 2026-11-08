@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Unidad2"
+rootProject.name = "ProyectoUT2Clase"
 include(":app")
 include(":Contenedores")
