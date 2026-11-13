@@ -25,3 +25,4 @@ dependencyResolutionManagement {
 rootProject.name = "ProyectoUT2Clase"
 include(":app")
 include(":Contenedores")
+include(":scaffolddemo")

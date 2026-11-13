@@ -127,6 +127,7 @@ fun MiComposablePreview() {
     Unidad2Theme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             MiComposable(modifier = Modifier.padding(innerPadding))
+            //MiComposable()
         }
     }
 }
