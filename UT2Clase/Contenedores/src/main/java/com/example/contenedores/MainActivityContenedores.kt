@@ -40,6 +40,8 @@ class MainActivityContenedores : ComponentActivity() {
     }
 }
 
+// Prueba de commit
+
 @Composable
 fun MiComposable(modifier: Modifier = Modifier) {
     // [MODIFICADO] En cada EJEMPLO, el modifier recibido como parámetro se aplica
