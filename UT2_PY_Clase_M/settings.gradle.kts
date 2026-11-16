@@ -26,3 +26,4 @@ rootProject.name = "UT2_PY_Clase_M"
 include(":app")
 include(":Contenedores")
 include(":scaffolddemo")
+include(":formulario")
