@@ -19,6 +19,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenu
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -80,9 +85,16 @@ fun FormulacioRegistro(modifier: Modifier = Modifier) {
     var modalidad by remember { mutableStateOf(opciones[0]) }
     val nombreError = nombre.isBlank()
     var intentoEnvio by remember { mutableStateOf(value = false) }
+    var registroCorrecto by remember { mutableStateOf(false) }
     val emailError = !Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()
     val passwordError = contrasenia.length < 6
     val formularioValido = !nombreError && !emailError && !passwordError && acepta
+
+    // Necesarias para Menú deplegabable
+    var curso by remember { mutableStateOf("") }
+    var expandido by remember { mutableStateOf(false) }
+    val cursos = listOf("1ºDAM", "2ºDAM")
+
 
 //    var mensaje = ""
     Box(modifier = modifier.fillMaxSize()) {
@@ -110,11 +122,12 @@ fun FormulacioRegistro(modifier: Modifier = Modifier) {
             OutlinedTextField(
                 value = nombre,
                 onValueChange = { nombre = it },
-                label = { Text("Nombre") },
+                label = { Text("Nombre *") },
                 singleLine = true,
                 isError = intentoEnvio && nombreError,
                 supportingText = {
                     if (intentoEnvio && nombreError) Text("Nombre obligatorio")
+                    else Text("* Obligatorio")
                 },
                 modifier = Modifier.fillMaxWidth()
 
@@ -130,25 +143,27 @@ fun FormulacioRegistro(modifier: Modifier = Modifier) {
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("email") },
+                label = { Text("Email *") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 isError = intentoEnvio && emailError,
                 supportingText = {
                     if (intentoEnvio && emailError) Text("email incorrecto")
+                    else Text("* Obligatorio")
                 },
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = contrasenia,
                 onValueChange = { contrasenia = it },
-                label = { Text("constraseña") },
+                label = { Text("Constraseña *") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 visualTransformation = PasswordVisualTransformation(),
                 isError = intentoEnvio && passwordError,
                 supportingText = {
                     if (intentoEnvio && passwordError) Text("Contaseña demasiado corta")
+                    else Text("* Obligatorio")
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -172,27 +187,65 @@ fun FormulacioRegistro(modifier: Modifier = Modifier) {
 
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(checked = acepta, onCheckedChange = { acepta = it })
-                Text("Acepto los términos")
+                Checkbox(
+                    checked = acepta,
+                    onCheckedChange = { acepta = it }
+                )
+                Text("Acepto los términos *")
             }
 
             if (intentoEnvio && !acepta) {
-                Text("Acepta las condiciones")
+                Text("Acepta las condiciones", color = MaterialTheme.colorScheme.error) // He añadido color de error para que se vea mejor el mensaje de error.
             }
 
-            Text("Modalidad")
+            Text(text = "Modalidad", style = MaterialTheme.typography.headlineMedium)
             for (opcion in opciones) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(selected = opcion == modalidad, onClick = { modalidad = opcion })
                     Text(opcion)
                 }
             }
-            Button(onClick = { intentoEnvio = true }, modifier = Modifier.fillMaxWidth())
+            ExposedDropdownMenuBox(
+                expanded = expandido,
+                onExpandedChange = { expandido = it }
+            ) {
+                OutlinedTextField(
+                    value = curso,
+                    onValueChange = { },
+                    readOnly = true,
+                    label = { Text("Curso") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expandido) },
+                    modifier = Modifier
+                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                        .fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = expandido,
+                    onDismissRequest = { expandido = false }
+                ) {
+                    for (opcion in cursos) {
+                        DropdownMenuItem(
+                            text = { Text(opcion) },
+                            onClick = {
+                                curso = opcion
+                                expandido = false
+                            }
+                        )
+                    }
+                }
+            }
+            Button(
+                onClick = {
+                    intentoEnvio = true
+                    // [SOLUCIÓN ERROR] El resultado solo se actualiza al pulsar Registrarse.
+                    registroCorrecto = formularioValido
+                },
+                modifier = Modifier.fillMaxWidth())
             {
                 Text("Registrarse")
             }
 
-            if (intentoEnvio && formularioValido) {
+            if (registroCorrecto && formularioValido) {
                 Text("Registro correcto")
             }
         }
